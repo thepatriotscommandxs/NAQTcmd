@@ -2,7 +2,7 @@ import random
 from selenium import webdriver
 import re
 import os,sys
-
+import time
 
 fileName = sys.argv[0].split("/")[::-1][0].split(".")[1]
 
@@ -19,183 +19,93 @@ except:
 
 data = data.split("\n")
 
-urlRand = random.randint(0, len(data)-1)
 
+for i in range(len(data)):
+    tempCat = ""
+    url = data[i]
+    #url = "https://www.naqt.com/you-gotta-know/20th-century-paintings.html"
 
-url = data[urlRand]
+    driver = webdriver.Edge(executable_path="C:\\Users\\thepa\\Downloads\\msedgedriver.exe")
 
-#url = "https://www.naqt.com/you-gotta-know/calculus-ideas.html"
-
-driver = webdriver.Edge(executable_path="D:\\thepa\\Downloads\\edgedriver_win64\\msedgedriver.exe")
-
-# Opening the URL
-driver.get(url)
-  
-# Getting current URL source code
-get_source = driver.page_source
-driver.close()
-
-if(get_source.__contains__('<footer>')):
-    tempCat = get_source.split("<footer>",1)    
-
-tempCat[1] = ""
-
-get_source = "".join(tempCat)
-
-titleBOOL = ""
-
-if(get_source.__contains__("<section id=")):
-    category = get_source.split('<section id="')
-     
-elif(get_source.__contains__('<ul class="ygk">')):
-    category = get_source.split('<ul class="ygk">')
-
-    header = category[0].split("<h1>")[1]
-    header = header.split("</h1>")[0]
-    titleBOOL = "True"
+    # Opening the URL
+    driver.get(url)
     
+    # Getting current URL source code
+    get_source = driver.page_source
+    driver.close()
+    driver.quit()
 
-for i in range(len(category)):
-    if(category[i].startswith("honorable-mention")):
-        category.pop(i)
+    if(get_source.__contains__('<footer>')):
+        tempCat = get_source.split("<footer>",1)    
 
+        tempCat[1] = ""
 
-for i in range(len(category)-1):
-    if(category[i].startswith('<html lang="en"><head>')):
-        category.pop(i)
-
-for i in range(len(category)-2):
-    if(category[i].startswith('recommended-reading')):
-        category.pop(i)
-
-for i in range(len(category)-3):
-    if(category[i].startswith('<p class="ygk-attribution">')):
-        category.pop(i)
-
-for i in range(len(category)):
-    category[i] = category[i].split("</li>")
+    get_source = "".join(tempCat)
 
 
-for i in range(len(category)):
-    for ii in range(len(category[i])+1):
-        try:
-            category[i][ii] = category[i][ii].split("</",1)  
+
+    if(get_source.__contains__('<ul class="ygk">')):
+        category = get_source.split('<ul class="ygk">')
+    
+    
+    elif(get_source.__contains__('<dl class="ygk">')):
         
-        except:
-            pass 
-    
-for i in range(len(category)):
-    for ii in range(len(category[i])):
-
-        for iii in range(len(category[i][ii])):
-            category[i][ii][iii] = category[i][ii][iii].replace('<span class="ygk-term">',"").replace('</span>',"").replace("</li>","").replace("\n","").replace("\t","").replace('<span class="label">',"").replace("</ul>","").replace("</section>","").replace("\u2009","").replace("&nbsp"," ").replace("span>","")
-            category[i][ii][iii] = re.sub('s"><h2>[a-zA-Z]+</h2><ul class="ygk">',"",category[i][ii][iii])
-            category[i][ii][iii] = re.sub('<[a-zA-Z0-9=":/.\-\?%()_ ]+>',"",category[i][ii][iii])
-
-# [i] is the category, [ii] is the term, [iii] is the descriptor
-category = list(filter(None,category))
-array_len = 0
-
-
-
-for i in range(len(category)):
-    for ii in range(len(category[i])):
-        try:
-            category[i][ii+1][1] = category[i][ii+1][1].replace(category[i][ii+1][0],"This "+category[i][0][0])
-            category[i][ii+1][1] = category[i][ii+1][1].replace(category[i][ii+1][0].lower(),"This "+category[i][0][0])
-            
-            for iv in range(len(category[i][ii+1][0].split(" "))):
-                category[i][ii+1][1] = category[i][ii+1][1].replace(category[i][ii+1][0].split(" ")[iv],"*****")
-                category[i][ii+1][1] = category[i][ii+1][1].replace(category[i][ii+1][0].split(" ")[iv].lower(),"*****")
-        except: 
-            pass
-
-
-
-for i in range(len(category)):
-    for ii in range(len(category)):
-        if(category[i][ii]==""):
-            category.pop(ii)
-
-outer_len = len(category)
-
-outerRand = random.randint(0,len(category)-1)
-
-array_len = len(category[outerRand])-1
-rand = random.randint(0,array_len)
-
-answer = category[outerRand][rand][0]
-
-answer = re.sub('[A-Za-z0-9]+">',"",answer)
-
-arrayAnswer = answer.split(" ")
-
-counter = 0
-currentHint = ""
-wasCorrect = ""
-
-def inAnswer():
-    global arrayAnswer,answer,Guess,wasCorrect
-    for i in range(len(arrayAnswer)):
-        if(Guess.lower() == arrayAnswer[i].lower()):
-            wasCorrect= "True"
-
-
-def giveAnswer():
-    global counter,currentHint,Guess,titleBOOL,header
-
-
-    currentHint += category[outerRand][rand][1].split(".")[counter] + "."
-
-
-    if(titleBOOL=="True"):
-        print("Category is:   "+header)
+        category = get_source.split('<dl class="ygk">')
     else:
-        print("Category is:   "+category[outerRand][0][0])
+        print(url)
+        break
+
+
+    for i in range(len(category)):
+        if(category[i].startswith("honorable-mention")):
+            category.pop(i)
     
-    print(currentHint)
+    
+    
+    for i in range(len(category)-1):
+        if(category[i].startswith('<html lang="en"><head>')):
+            category.pop(i)
+    
+    for i in range(len(category)-2):
+        if(category[i].startswith('recommended-reading')):
+            category.pop(i)
+   
+    for i in range(len(category)-3):
+        if(category[i].startswith('<p class="ygk-attribution">')):
+            category.pop(i)
 
 
-    Guess = input("Take your Guess \n")
-
-
-    inAnswer()
-    if(wasCorrect=="True"):
-
-        print("CORRECT!!!")
-    else:
-
-        counter += 1
-        try:
-            giveAnswer()
-        except:
-            Guess = ("No More Hints, Good Luck" + currentHint)
-            inAnswer()
-            if(wasCorrect=="True"):
-                print("CORRECT!!!")
-            else:
-                print("ANSWER IS: \n\n"+answer+"\n\n")
-
+    for i in range(len(category)):
+        category[i] = category[i].split("</li>")
+    for i in range(len(category)):
+        for ii in range(len(category[i])):
+            category[i][ii] = category[i][ii].split("</",1)
 
 
 
-giveAnswer()
+    for i in range(len(category)):
+        for ii in range(len(category[i])):
+            for iii in range(len(category[i][ii])):
+                category[i][ii][iii] = re.sub("<(?:[^>])*>","",category[i][ii][iii])
+                category[i][ii][iii] = category[i][ii][iii].replace("\n","").replace("\t","").replace("\u2009","").replace("&nbsp"," ").replace("span>","").replace("i>","")
 
-
-input()
-
-#try:
+    for i in range(len(category)):
+        for ii in range(len(category[i])):
+            try:
+                if(category[i][ii][0]==""):
+                    
+                    category[i].pop(ii)
+            except:
+                if(category[i][0]==""):
+                    
+                    category.pop(i)
 
     
-        
+    print(category)
+    with open (__location__+"\\data\\"+url.replace("https://www.naqt.com/you-gotta-know/","").replace(".html","")+".txt", "w") as f:
+        for i in range(len(category)):
+            for ii in range(len(category[i])):
+                tempText = str(category[i][ii]).replace("-",";").encode("ascii","ignore")
+                tempText = tempText.decode()
 
-
-
-
-
-#except:
- #   print(category[outerRand][rand][1].split()[:10])
-
-
-
-
+                f.write(tempText+"\n")
