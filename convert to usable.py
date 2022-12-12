@@ -1,6 +1,5 @@
-from PyPDF2 import PdfFileReader
-import os,sys
-import re
+import sys,os
+
 
 fileName = sys.argv[0].split("/")[::-1][0].split(".")[1]
 
@@ -9,50 +8,15 @@ if (fileName == "py"):
 else:
     __location__ = os.getcwd()
 
-itemCount = len((os.listdir(__location__+"\\data")))
+itemCount = len((os.listdir(__location__+"\\converted")))
 
-items = os.listdir(__location__+"\\data")
+items = os.listdir(__location__+"\\converted")
 fulltext = ""
 
-for i in range(1):
-    fulltext = ""
-    # Open the PDF file for reading
-    input_file = PdfFileReader(open(__location__+'\\data\\'+items[i], 'rb'))
-
-    # Loop through each page of the input file
-    for page in input_file.pages:
-    # Extract the text from the page
-        text = page.extractText()
-        fulltext += text.replace("\n", " ")
+for i in range(itemCount):
+    with open(__location__+"\\converted\\"+items[i], "r",encoding="utf-8") as f:
+        fulltext = f.read()
 
 
-    fulltext = re.sub(".*TOSSUPS 1.",">",fulltext)
-
-    #firstPower = re.findall("1\.(?:[^>])*\(\*\)",fulltext)
-    power = re.findall(">(?:[^>])*\(\*\)", fulltext)
-
-    hint = re.findall("\(\*\)(?:[^>])+ANSWER: ", fulltext)
-
-    answer = re.findall("ANSWER:(?:[^>])+<", fulltext)
-
-
-    for i in range(len(power)):
-        power[i] = re.sub("","",power[i])
-        power[i] = power[i].replace("(*)","")
-        power[i] = re.sub(">(?:[^.])*\.","",power[i]-)
-
-
-    for i in range(len(hint)):
-        hint[i] = hint[i].replace("ANSWER: ","")
-        hint[i] = hint[i].replace("(*)","")
-
-    for i in range(len(answer)):
-        answer[i] = answer[i].replace("ANSWER: ","")
-        answer[i] = answer[i].replace("<","")
-        answer[i] = re.sub("\[.*\]","",answer[i])
-        answer[i] = re.sub("\(.*\)","",answer[i])
-
-    for i in range(len(answer)):
-        with open(__location__+"\\fullQs.txt","a", encoding="utf-8") as f:
-            f.write("['"+answer[i]+"', '"+power[i]+"||"+hint[i]+"']"+"\n")
-        print("['"+answer[i]+"', '"+power[i]+"||"+hint[0]+"']"+"\n")
+    with open(__location__+"\\total.txt","a",encoding="utf-8") as x:
+        x.write(fulltext)
