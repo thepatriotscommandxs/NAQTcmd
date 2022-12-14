@@ -39,18 +39,26 @@ for c in range(itemCount):
 
 
 
-    for i in range(len(power)):
-        power[i] = re.sub("","",power[i])
-        power[i] = power[i].replace("(*)","")
-        power[i] = re.sub(">(?:[^.])*\.","",power[i])
-        power[i] = re.sub("\((?:[^)])*\)","",power[i])
+    #for i in range(len(power)):
+    #    power[i] = re.sub("","",power[i])
+    #    power[i] = power[i].replace("(*)","")
+    #    power[i] = re.sub(">(?:[^.])*\.","",power[i])
+    #    power[i] = re.sub("\((?:[^)])*\)","",power[i])
        
 
-
     for i in range(len(hint)):
-        hint[i] = hint[i].replace("ANSWER: ","")
+        hint[i] = re.sub("AN+[a-zA-Z0-9 ]{4,5}: ","",hint[i])
         hint[i] = hint[i].replace("(*)","")
-        hint[i] = re.sub("\((?:[^)])*\)","",hint[i])
+        hint[i] = re.sub("\[(?:[^]])*\]","",hint[i])
+
+        power.append(hint[i].split(". ")[0])
+
+        split = hint[i].split(". ")[0]
+
+        hint[i] = hint[i].replace(split,"")
+
+
+    
 
 
     for i in range(len(answer)):
